@@ -188,9 +188,11 @@ const createCloneButton = (tool, tgitMetadata, small = true) => {
   const button = document.createElement('a');
   button.setAttribute(
     'class',
-    `tg-button ${small ? 'btn-sm' : 'tg-button--size-medium'} tooltipped tooltipped-s tooltipped-multiline BtnGroup-item d-flex`
+    `tg-button ${small ? 'btn-sm' : 'tg-button--size-medium'} has_tooltip BtnGroup-item d-flex`
   );
-  button.setAttribute('title', `Clone in ${tool.name}`);
+  button.setAttribute('data-title', `Clone in ${tool.name}`);
+  button.setAttribute('data-container', 'body');
+  button.setAttribute('data-placement', 'bottom');
   button.setAttribute('style', 'align-items:center');
   button.dataset.toolTag = tool.tag;
 
