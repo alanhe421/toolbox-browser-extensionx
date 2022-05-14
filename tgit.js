@@ -188,10 +188,9 @@ const createCloneButton = (tool, tgitMetadata, small = true) => {
   const button = document.createElement('a');
   button.setAttribute(
     'class',
-    `btn ${small ? 'btn-sm' : ''} tooltipped tooltipped-s tooltipped-multiline BtnGroup-item d-flex`
+    `tg-button ${small ? 'btn-sm' : 'tg-button--size-medium'} tooltipped tooltipped-s tooltipped-multiline BtnGroup-item d-flex`
   );
-  button.setAttribute('href', '#');
-  button.setAttribute('aria-label', `Clone in ${tool.name}`);
+  button.setAttribute('title', `Clone in ${tool.name}`);
   button.setAttribute('style', 'align-items:center');
   button.dataset.toolTag = tool.tag;
 
@@ -226,13 +225,17 @@ const renderCloneButtons = (tools, tgitMetadata) => {
     getRepoController.insertAdjacentElement('beforebegin', toolboxCloneButtonGroup);
   } else {
     // new UI as of 24.06.20
-    getRepoController = document.querySelector('button[data-clipboard-target="#project_clone"]');
+    getRepoController = document.querySelector('div[class="project-topics append-bottom-25"]');
     if (getRepoController) {
       const toolboxCloneButtonGroup = document.createElement('div');
       const isOnPullRequestsTab = document.querySelector('#pull-requests-tab[aria-current="page"]');
       toolboxCloneButtonGroup.setAttribute(
         'class',
         `BtnGroup ${isOnPullRequestsTab ? 'ml-1' : 'mr-2'} d-flex ${CLONE_BUTTON_GROUP_JS_CSS_CLASS}`
+      );
+      toolboxCloneButtonGroup.setAttribute(
+        'style',
+        `position: relative;top: 10px;`
       );
       tools.forEach(tool => {
         const btn = createCloneButton(tool, tgitMetadata, false);
@@ -352,7 +355,7 @@ const renderPageButtons = tgitMetadata => {
 };
 
 const startTrackingDOMChanges = tgitMetadata =>
-  observe('button[data-clipboard-target="#project_clone"]', {
+  observe('div[class="project-topics append-bottom-25"]', {
     add() {
       removePageButtons();
       renderPageButtons(tgitMetadata);
