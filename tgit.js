@@ -11,13 +11,12 @@ import {
   MAX_VALID_HTTP_STATUS,
   DEFAULT_LANGUAGE,
   DEFAULT_LANGUAGE_SET,
-  CLONE_PROTOCOLS
+  CLONE_PROTOCOLS,
+  SUFFIX_LANGUAGES
 } from './constants';
 
 import {
-  getToolboxURN,
-  getToolboxNavURN,
-  callToolbox
+  getToolboxURN, getToolboxNavURN, callToolbox
 } from './api/toolbox';
 import gh from './tgit-url-to-object';
 
@@ -63,39 +62,31 @@ const convertBytesToPercents = languages => new Promise(resolve => {
   }, {}));
 });
 
+// low-version tgit no language api, so use root html to extract languages
 const extractLanguagesFromPage = tgitMetadata => new Promise(resolve => {
-  // TBX-4762: private repos don't let use API, load root page and scrape languages off it
   fetch(tgitMetadata.clone_url).then(response => response.text()).then(htmlString => {
     const parser = new DOMParser();
     const htmlDocument = parser.parseFromString(htmlString, 'text/html');
-    const languageElements = htmlDocument.querySelectorAll('.repository-lang-stats-numbers .lang');
-    if (languageElements.length === 0) {
-      // see if it's new UI as of 24.06.20
-      const newLanguageElements = htmlDocument.querySelectorAll(
-        '[data-ga-click="Repository, language stats search click, location:repo overview"]'
-      );
-      if (newLanguageElements.length > 0) {
-        const allLanguages = Array.from(newLanguageElements).reduce((acc, el) => {
-          const langEl = el.querySelector('span');
-          const percentEl = langEl.nextElementSibling;
-          acc[langEl.textContent] = percentEl ? parseFloat(percentEl.textContent) : USAGE_THRESHOLD + 1;
-          return acc;
-        }, {});
-        if (Object.keys(allLanguages).length > 0) {
-          resolve(allLanguages);
-        } else {
-          resolve(DEFAULT_LANGUAGE_SET);
-        }
-      } else {
-        resolve(DEFAULT_LANGUAGE_SET);
+    const languages = [...htmlDocument.querySelectorAll('.tree-item-name a')].reduce((res, item) => {
+      let filename = item.innerText.replace(/\t?\n?/g, '');
+      let fileSuffix = filename.match(/(?<=\.)[^.]+$/)?.[0];
+      if (!fileSuffix) {
       }
+      let language = SUFFIX_LANGUAGES[fileSuffix] || fileSuffix;
+      if (!language) {
+        return res;
+      }
+      if (res[language]) {
+        res[language] = res[language] + 1;
+      } else {
+        res[language] = USAGE_THRESHOLD;
+      }
+      return res;
+    }, {});
+    if (languages.length === 0) {
+      resolve(DEFAULT_LANGUAGE_SET);
     } else {
-      const allLanguages = Array.from(languageElements).reduce((acc, el) => {
-        const percentEl = el.nextElementSibling;
-        acc[el.textContent] = percentEl ? parseFloat(percentEl.textContent) : USAGE_THRESHOLD + 1;
-        return acc;
-      }, {});
-      resolve(allLanguages);
+      resolve(languages);
     }
   }).catch(() => {
     resolve(DEFAULT_LANGUAGE_SET);
@@ -115,17 +106,14 @@ const fetchLanguages = tgitMetadata => new Promise(resolve => {
 const selectTools = languages => new Promise(resolve => {
   const overallPoints = Object.values(languages).reduce((overall, current) => overall + current, 0);
 
-  const filterLang = language =>
-    SUPPORTED_LANGUAGES[language.toLowerCase()] && languages[language] / overallPoints > USAGE_THRESHOLD;
+  const filterLang = language => SUPPORTED_LANGUAGES[language.toLowerCase()] && languages[language] / overallPoints > USAGE_THRESHOLD;
 
   const selectedToolIds = Object.keys(languages).filter(filterLang).reduce((acc, key) => {
     acc.push(...SUPPORTED_LANGUAGES[key.toLowerCase()]);
     return acc;
   }, []);
 
-  const normalizedToolIds = selectedToolIds.length > 0
-    ? Array.from(new Set(selectedToolIds))
-    : SUPPORTED_LANGUAGES[DEFAULT_LANGUAGE];
+  const normalizedToolIds = selectedToolIds.length > 0 ? Array.from(new Set(selectedToolIds)) : SUPPORTED_LANGUAGES[DEFAULT_LANGUAGE];
 
   const tools = normalizedToolIds.sort().map(toolId => SUPPORTED_TOOLS[toolId]);
 
@@ -135,8 +123,7 @@ const selectTools = languages => new Promise(resolve => {
 const fetchTools = tgitMetadata => fetchLanguages(tgitMetadata).then(selectTools);
 
 const getHttpsCloneUrl = tgitMetadata => `${tgitMetadata.clone_url}.git`;
-const getSshCloneUrl =
-  tgitMetadata => `git@${tgitMetadata.host}:${tgitMetadata.user}/${tgitMetadata.repo}.git`;
+const getSshCloneUrl = tgitMetadata => `git@${tgitMetadata.host}:${tgitMetadata.user}/${tgitMetadata.repo}.git`;
 
 let handleMessage = null;
 
@@ -175,9 +162,7 @@ const addCloneButtonEventHandler = (btn, tgitMetadata) => {
 
     const {toolTag} = e.currentTarget.dataset;
     chrome.runtime.sendMessage({type: 'get-protocol'}, ({protocol}) => {
-      const cloneUrl = protocol === CLONE_PROTOCOLS.HTTPS
-        ? getHttpsCloneUrl(tgitMetadata)
-        : getSshCloneUrl(tgitMetadata);
+      const cloneUrl = protocol === CLONE_PROTOCOLS.HTTPS ? getHttpsCloneUrl(tgitMetadata) : getSshCloneUrl(tgitMetadata);
       const action = getToolboxURN(toolTag, cloneUrl);
       callToolbox(action);
     });
@@ -186,10 +171,7 @@ const addCloneButtonEventHandler = (btn, tgitMetadata) => {
 
 const createCloneButton = (tool, tgitMetadata, small = true) => {
   const button = document.createElement('a');
-  button.setAttribute(
-    'class',
-    `tg-button ${small ? 'btn-sm' : 'tg-button--size-medium'} has_tooltip BtnGroup-item d-flex`
-  );
+  button.setAttribute('class', `tg-button ${small ? 'btn-sm' : 'tg-button--size-medium'} has_tooltip BtnGroup-item d-flex`);
   button.setAttribute('data-title', `Clone in ${tool.name}`);
   button.setAttribute('data-container', 'body');
   button.setAttribute('data-placement', 'bottom');
@@ -211,9 +193,7 @@ const createCloneButton = (tool, tgitMetadata, small = true) => {
 
 const renderCloneButtons = (tools, tgitMetadata) => {
   let getRepoController = document.querySelector('.BtnGroup + .d-flex > get-repo-controller');
-  getRepoController = getRepoController
-    ? getRepoController.parentElement
-    : document.querySelector('.js-get-repo-select-menu');
+  getRepoController = getRepoController ? getRepoController.parentElement : document.querySelector('.js-get-repo-select-menu');
 
   if (getRepoController) {
     const toolboxCloneButtonGroup = document.createElement('div');
@@ -231,14 +211,8 @@ const renderCloneButtons = (tools, tgitMetadata) => {
     if (getRepoController) {
       const toolboxCloneButtonGroup = document.createElement('div');
       const isOnPullRequestsTab = document.querySelector('#pull-requests-tab[aria-current="page"]');
-      toolboxCloneButtonGroup.setAttribute(
-        'class',
-        `BtnGroup ${isOnPullRequestsTab ? 'ml-1' : 'mr-2'} d-flex ${CLONE_BUTTON_GROUP_JS_CSS_CLASS}`
-      );
-      toolboxCloneButtonGroup.setAttribute(
-        'style',
-        `position: relative;top: 10px;`
-      );
+      toolboxCloneButtonGroup.setAttribute('class', `BtnGroup ${isOnPullRequestsTab ? 'ml-1' : 'mr-2'} d-flex ${CLONE_BUTTON_GROUP_JS_CSS_CLASS}`);
+      toolboxCloneButtonGroup.setAttribute('style', `position: relative;top: 10px;`);
       tools.forEach(tool => {
         const btn = createCloneButton(tool, tgitMetadata, false);
         toolboxCloneButtonGroup.appendChild(btn);
@@ -356,16 +330,14 @@ const renderPageButtons = tgitMetadata => {
   });
 };
 
-const startTrackingDOMChanges = tgitMetadata =>
-  observe('div[class="project-topics append-bottom-25"]', {
-    add() {
-      removePageButtons();
-      renderPageButtons(tgitMetadata);
-    },
-    remove() {
-      removePageButtons();
-    }
-  });
+const startTrackingDOMChanges = tgitMetadata => observe('div[class="project-topics append-bottom-25"]', {
+  add() {
+    removePageButtons();
+    renderPageButtons(tgitMetadata);
+  }, remove() {
+    removePageButtons();
+  }
+});
 
 const stopTrackingDOMChanges = observer => {
   if (observer) {

@@ -95,3 +95,13 @@ export const CLONE_PROTOCOLS = {
   HTTPS: 'HTTPS',
   SSH: 'SSH'
 };
+
+export const SUFFIX_LANGUAGES = {
+  js: 'javascript',
+  jsx: 'javascript',
+  ts: 'typescript',
+  tsx: 'typescript',
+  scss: 'css',
+  sass: 'css',
+  less: 'css',
+};
