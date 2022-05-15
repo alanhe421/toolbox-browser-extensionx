@@ -6,13 +6,15 @@ const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const LicenseChecker = require('@jetbrains/ring-ui-license-checker');
+const ExtensionReloader = require('webpack-extension-reloader');
 
-module.exports = {
+module.exports = (env, argv) => ({
   entry: {
     'github-public': './github-public',
     'gitlab-public': './gitlab-public',
     'bitbucket-public': './bitbucket-public',
     'tgit-public': './tgit-public',
+    'gitee-public': './gitee-public',
     background: './background',
     'clone-popup': './popups/clone',
     'detect-enterprise': './detect-enterprise',
@@ -48,7 +50,7 @@ module.exports = {
   },
   optimization: {
     minimizer: [
-      new TerserPlugin({
+      argv.mode === 'production' && new TerserPlugin({
         extractComments: false,
         terserOptions: {
           extractComments: false,
@@ -76,7 +78,7 @@ module.exports = {
           }
         }
       })
-    ]
+    ].filter(Boolean)
   },
   plugins: [
     new CopyWebpackPlugin({
@@ -100,6 +102,15 @@ module.exports = {
 ${mod.license.name} (${mod.license.url})`).join('\n\n'),
       filename: 'third-party-licences.txt',
       exclude: /@jetbrains[\/|\\]logos/
+    }),
+    argv.mode === 'production' && new ExtensionReloader({
+      port: 9090, // Which port use to create the server
+      reloadPage: true, // Force the reload of the page also
+      entries: {
+        popup: 'clone-popup',
+        background: 'background',
+        contentScript: ['github-public', 'gitlab-public', 'bitbucket-public', 'tgit-public', 'gitee-public']
+      }
     })
-  ]
-};
+  ].filter(Boolean)
+});

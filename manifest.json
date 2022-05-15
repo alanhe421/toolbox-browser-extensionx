@@ -36,6 +36,10 @@
     {
       "matches": ["https://git.code.tencent.com/*"],
       "js": ["jetbrains-toolbox-tgit-public.js"]
+    },
+    {
+      "matches": ["https://gitee.com/*"],
+      "js": ["jetbrains-toolbox-gitee-public.js"]
     }
   ],
   "options_ui": {

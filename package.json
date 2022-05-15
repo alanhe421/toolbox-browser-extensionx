@@ -8,12 +8,13 @@
     "build": "webpack --bail -p",
     "postbuild": "node distribution/generate-readme.js",
     "build:dev": "webpack --bail -p --mode=development --devtool=inline-source-map",
-    "watch": "webpack -w"
+    "dev": "webpack --bail -p --mode=development --devtool=inline-source-map -w"
   },
   "dependencies": {
     "@jetbrains/logos": "^1.2.10",
     "bitbucket-url-to-object": "^0.3.0",
     "content-scripts-register-polyfill": "1.0.0",
+    "gitee-url-to-object": "^0.1.0",
     "github-url-to-object": "^4.0.4",
     "parse-bitbucket-url": "^0.3.0",
     "selector-observer": "^2.1.6",
@@ -43,7 +44,8 @@
     "regenerator-runtime": "^0.13.5",
     "terser-webpack-plugin": "^3.0.6",
     "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.12"
+    "webpack-cli": "^3.3.12",
+    "webpack-extension-reloader": "^1.1.4"
   },
   "husky": {
     "hooks": {
