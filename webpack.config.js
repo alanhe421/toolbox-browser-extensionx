@@ -13,6 +13,7 @@ module.exports = {
     'gitlab-public': './gitlab-public',
     'bitbucket-public': './bitbucket-public',
     'tgit-public': './tgit-public',
+    'gitee-public': './gitee-public',
     background: './background',
     'clone-popup': './popups/clone',
     'detect-enterprise': './detect-enterprise',
