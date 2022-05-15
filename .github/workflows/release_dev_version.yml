@@ -35,11 +35,11 @@ jobs:
       - name: build
         run:  npm run build
       - name: package
-        run: tar -cvf toolbox-browser-extension.tar dist
+        run: zip -r toolbox-browser-extension.a dist
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           name: latest version
-          files: toolbox-browser-extension.tar
+          files: toolbox-browser-extension.zip
           tag_name: latest
           token: ${{ secrets.DEPLOY_TOKEN }}
