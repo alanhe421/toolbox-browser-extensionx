@@ -145,8 +145,8 @@ const createCloneButton = (tool, githubMetadata, small = true) => {
   const buttonIcon = document.createElement('img');
   buttonIcon.setAttribute('alt', tool.name);
   buttonIcon.setAttribute('src', tool.icon);
-  buttonIcon.setAttribute('width', '16');
-  buttonIcon.setAttribute('height', '16');
+  buttonIcon.setAttribute('width', '17');
+  buttonIcon.setAttribute('height', '17');
   buttonIcon.setAttribute('style', 'vertical-align:text-top');
   button.appendChild(buttonIcon);
 
@@ -156,39 +156,22 @@ const createCloneButton = (tool, githubMetadata, small = true) => {
 };
 
 const renderCloneButtons = (tools, githubMetadata) => {
-  let getRepoController = document.querySelector('.BtnGroup + .d-flex > get-repo-controller');
-  getRepoController = getRepoController
-    ? getRepoController.parentElement
-    : document.querySelector('.js-get-repo-select-menu');
-
+  const getRepoController = document.querySelector('.git-project-right-actions');
   if (getRepoController) {
     const toolboxCloneButtonGroup = document.createElement('div');
-    toolboxCloneButtonGroup.setAttribute('class', `BtnGroup ml-2 d-flex ${CLONE_BUTTON_GROUP_JS_CSS_CLASS}`);
-
+    const isOnPullRequestsTab = document.querySelector('#pull-requests-tab[aria-current="page"]');
+    toolboxCloneButtonGroup.setAttribute(
+      'class',
+      `BtnGroup pull-right ${isOnPullRequestsTab ? 'ml-1' : 'mr-2'} d-flex ${CLONE_BUTTON_GROUP_JS_CSS_CLASS}`
+    );
     tools.forEach(tool => {
-      const btn = createCloneButton(tool, githubMetadata);
+      const btn = createCloneButton(tool, githubMetadata, false);
       toolboxCloneButtonGroup.appendChild(btn);
     });
 
     getRepoController.insertAdjacentElement('afterend', toolboxCloneButtonGroup);
-  } else {
-    // new UI as of 24.06.20
-    getRepoController = document.querySelector('.git-project-right-actions');
-    if (getRepoController) {
-      const toolboxCloneButtonGroup = document.createElement('div');
-      const isOnPullRequestsTab = document.querySelector('#pull-requests-tab[aria-current="page"]');
-      toolboxCloneButtonGroup.setAttribute(
-        'class',
-        `BtnGroup pull-right ${isOnPullRequestsTab ? 'ml-1' : 'mr-2'} d-flex ${CLONE_BUTTON_GROUP_JS_CSS_CLASS}`
-      );
-      tools.forEach(tool => {
-        const btn = createCloneButton(tool, githubMetadata, false);
-        toolboxCloneButtonGroup.appendChild(btn);
-      });
-
-      getRepoController.insertAdjacentElement('beforebegin', toolboxCloneButtonGroup);
-    }
   }
+
 };
 
 const addOpenButtonEventHandler = (domElement, tool, githubMetadata) => {
