@@ -42,3 +42,4 @@ jobs:
           name: latest version
           files: toolbox-browser-extension.tar
           tag_name: latest
+          token: ${{ secrets.DEPLOY_TOKEN }}
