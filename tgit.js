@@ -1,4 +1,6 @@
+const gh = require('tgit-url-to-object');
 import 'whatwg-fetch';
+
 import {observe} from 'selector-observer';
 
 import {
@@ -18,7 +20,6 @@ import {
 import {
   getToolboxURN, getToolboxNavURN, callToolbox
 } from './api/toolbox';
-import gh from './tgit-url-to-object';
 
 const CLONE_BUTTON_GROUP_JS_CSS_CLASS = 'js-toolbox-clone-button-group';
 const OPEN_BUTTON_JS_CSS_CLASS = 'js-toolbox-open-button';
