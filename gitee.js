@@ -207,10 +207,10 @@ const createCloneButton = (tool, githubMetadata, small = true) => {
   const button = document.createElement('a');
   button.setAttribute(
     'class',
-    `btn ${small ? 'btn-sm' : ''} tooltipped tooltipped-s tooltipped-multiline BtnGroup-item d-flex`
+    `button ${small ? 'btn-sm' : ''} ui gradient BtnGroup-item d-flex`
   );
   button.setAttribute('href', '#');
-  button.setAttribute('aria-label', `Clone in ${tool.name}`);
+  button.setAttribute('title', `Clone in ${tool.name}`);
   button.setAttribute('style', 'align-items:center');
   button.dataset.toolTag = tool.tag;
 
@@ -245,7 +245,7 @@ const renderCloneButtons = (tools, githubMetadata) => {
     getRepoController.insertAdjacentElement('beforebegin', toolboxCloneButtonGroup);
   } else {
     // new UI as of 24.06.20
-    getRepoController = document.querySelector('get-repo');
+    getRepoController = document.querySelector('.git-project-right-actions');
     if (getRepoController) {
       const toolboxCloneButtonGroup = document.createElement('div');
       const isOnPullRequestsTab = document.querySelector('#pull-requests-tab[aria-current="page"]');
