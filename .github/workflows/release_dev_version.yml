@@ -41,3 +41,4 @@ jobs:
         with:
           name: latest version
           files: toolbox-browser-extension.tar
+          tag_name: latest
