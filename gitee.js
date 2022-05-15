@@ -1,15 +1,10 @@
 import 'whatwg-fetch';
 import {observe} from 'selector-observer';
-import gh from 'github-url-to-object';
 
 import {
   SUPPORTED_LANGUAGES,
   SUPPORTED_TOOLS,
   USAGE_THRESHOLD,
-  HUNDRED_PERCENT,
-  MAX_DECIMALS,
-  MIN_VALID_HTTP_STATUS,
-  MAX_VALID_HTTP_STATUS,
   DEFAULT_LANGUAGE,
   DEFAULT_LANGUAGE_SET,
   CLONE_PROTOCOLS
@@ -20,6 +15,9 @@ import {
   getToolboxNavURN,
   callToolbox
 } from './api/toolbox';
+
+// eslint-disable-next-line import/no-commonjs
+const gh = require('gitee-url-to-object');
 
 const CLONE_BUTTON_GROUP_JS_CSS_CLASS = 'js-toolbox-clone-button-group';
 const OPEN_BUTTON_JS_CSS_CLASS = 'js-toolbox-open-button';
@@ -34,94 +32,24 @@ const fetchMetadata = () => new Promise((resolve, reject) => {
   }
 });
 
-const checkResponseStatus = response => new Promise((resolve, reject) => {
-  if (response.status >= MIN_VALID_HTTP_STATUS && response.status <= MAX_VALID_HTTP_STATUS) {
-    resolve(response);
-  } else {
-    reject();
-  }
-});
-
-const parseResponse = response => new Promise((resolve, reject) => {
-  response.json().then(result => {
-    if (Object.keys(result).length > 0) {
-      resolve(result);
-    } else {
-      reject();
-    }
+const extractLanguagesFromPage = githubMetadata => new Promise(resolve => {
+  // TBX-4762: private repos don't let use API, load root page and scrape languages off it
+  fetch(githubMetadata.clone_url).then(response => response.text()).then(htmlString => {
+    const parser = new DOMParser();
+    const htmlDocument = parser.parseFromString(htmlString, 'text/html');
+    const languageElements = htmlDocument.querySelectorAll('div[class="lang"] a');
+    const allLanguages = Array.from(languageElements).reduce((acc, el) => {
+      acc[el.textContent.toLowerCase()] = USAGE_THRESHOLD + 1;
+      return acc;
+    }, {});
+    resolve(allLanguages);
   }).catch(() => {
-    reject();
+    resolve(DEFAULT_LANGUAGE_SET);
   });
 });
 
-const convertBytesToPercents = languages => new Promise(resolve => {
-  const totalBytes = Object.
-    values(languages).
-    reduce((total, bytes) => total + bytes, 0);
-
-  Object.
-    keys(languages).
-    forEach(key => {
-      const percentFloat = languages[key] / totalBytes * HUNDRED_PERCENT;
-      const percentString = percentFloat.toFixed(MAX_DECIMALS);
-      languages[key] = parseFloat(percentString);
-    });
-
-  resolve(languages);
-});
-
-const extractLanguagesFromPage = githubMetadata => new Promise(resolve => {
-  // TBX-4762: private repos don't let use API, load root page and scrape languages off it
-  fetch(githubMetadata.clone_url).
-    then(response => response.text()).
-    then(htmlString => {
-      const parser = new DOMParser();
-      const htmlDocument = parser.parseFromString(htmlString, 'text/html');
-      const languageElements = htmlDocument.querySelectorAll('.repository-lang-stats-numbers .lang');
-      if (languageElements.length === 0) {
-        // see if it's new UI as of 24.06.20
-        const newLanguageElements = htmlDocument.querySelectorAll(
-          '[data-ga-click="Repository, language stats search click, location:repo overview"]'
-        );
-        if (newLanguageElements.length > 0) {
-          const allLanguages = Array.from(newLanguageElements).reduce((acc, el) => {
-            const langEl = el.querySelector('span');
-            const percentEl = langEl.nextElementSibling;
-            acc[langEl.textContent] = percentEl ? parseFloat(percentEl.textContent) : USAGE_THRESHOLD + 1;
-            return acc;
-          }, {});
-          if (Object.keys(allLanguages).length > 0) {
-            resolve(allLanguages);
-          } else {
-            resolve(DEFAULT_LANGUAGE_SET);
-          }
-        } else {
-          resolve(DEFAULT_LANGUAGE_SET);
-        }
-      } else {
-        const allLanguages = Array.from(languageElements).reduce((acc, el) => {
-          const percentEl = el.nextElementSibling;
-          acc[el.textContent] = percentEl ? parseFloat(percentEl.textContent) : USAGE_THRESHOLD + 1;
-          return acc;
-        }, {});
-        resolve(allLanguages);
-      }
-    }).
-    catch(() => {
-      resolve(DEFAULT_LANGUAGE_SET);
-    });
-});
-
 const fetchLanguages = githubMetadata => new Promise(resolve => {
-  fetch(`${githubMetadata.api_url}/languages`).
-    then(checkResponseStatus).
-    then(parseResponse).
-    then(convertBytesToPercents).
-    then(resolve).
-    catch(() => {
-      extractLanguagesFromPage(githubMetadata).
-        then(resolve);
-    });
+  extractLanguagesFromPage(githubMetadata).then(resolve);
 });
 
 const selectTools = languages => new Promise(resolve => {
@@ -242,7 +170,7 @@ const renderCloneButtons = (tools, githubMetadata) => {
       toolboxCloneButtonGroup.appendChild(btn);
     });
 
-    getRepoController.insertAdjacentElement('beforebegin', toolboxCloneButtonGroup);
+    getRepoController.insertAdjacentElement('afterend', toolboxCloneButtonGroup);
   } else {
     // new UI as of 24.06.20
     getRepoController = document.querySelector('.git-project-right-actions');
@@ -251,7 +179,7 @@ const renderCloneButtons = (tools, githubMetadata) => {
       const isOnPullRequestsTab = document.querySelector('#pull-requests-tab[aria-current="page"]');
       toolboxCloneButtonGroup.setAttribute(
         'class',
-        `BtnGroup ${isOnPullRequestsTab ? 'ml-1' : 'mr-2'} d-flex ${CLONE_BUTTON_GROUP_JS_CSS_CLASS}`
+        `BtnGroup pull-right ${isOnPullRequestsTab ? 'ml-1' : 'mr-2'} d-flex ${CLONE_BUTTON_GROUP_JS_CSS_CLASS}`
       );
       tools.forEach(tool => {
         const btn = createCloneButton(tool, githubMetadata, false);
@@ -373,7 +301,7 @@ const renderPageButtons = githubMetadata => {
 };
 
 const startTrackingDOMChanges = githubMetadata =>
-  observe('.repository-content get-repo, .repository-content .Box-header .BtnGroup', {
+  observe('.git-project-right-actions', {
     add() {
       removePageButtons();
       renderPageButtons(githubMetadata);
