@@ -54,7 +54,8 @@
     "https://gitlab.com/*",
     "https://bitbucket.org/*",
     "https://api.bitbucket.org/*",
-    "https://git.woa.com/*"
+    "https://git.woa.com/*",
+    "https://git.code.tencent.com/*"
   ],
   "optional_permissions": [
     "http://*/*",
