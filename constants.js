@@ -103,5 +103,5 @@ export const SUFFIX_LANGUAGES = {
   tsx: 'typescript',
   scss: 'css',
   sass: 'css',
-  less: 'css',
+  less: 'css'
 };
