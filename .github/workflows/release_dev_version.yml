@@ -35,7 +35,7 @@ jobs:
       - name: build
         run:  npm run build
       - name: package
-        run: zip -r toolbox-browser-extension.a dist
+        run: zip -r toolbox-browser-extension.zip dist
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
