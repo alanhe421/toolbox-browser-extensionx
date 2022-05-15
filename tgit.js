@@ -1,4 +1,3 @@
-const gh = require('tgit-url-to-object');
 import 'whatwg-fetch';
 
 import {observe} from 'selector-observer';
@@ -20,6 +19,9 @@ import {
 import {
   getToolboxURN, getToolboxNavURN, callToolbox
 } from './api/toolbox';
+
+// eslint-disable-next-line import/no-commonjs
+const gh = require('tgit-url-to-object');
 
 const CLONE_BUTTON_GROUP_JS_CSS_CLASS = 'js-toolbox-clone-button-group';
 const OPEN_BUTTON_JS_CSS_CLASS = 'js-toolbox-open-button';
@@ -69,16 +71,17 @@ const extractLanguagesFromPage = tgitMetadata => new Promise(resolve => {
     const parser = new DOMParser();
     const htmlDocument = parser.parseFromString(htmlString, 'text/html');
     const languages = [...htmlDocument.querySelectorAll('.tree-item-name a')].reduce((res, item) => {
-      let filename = item.innerText.replace(/\t?\n?/g, '');
-      let fileSuffix = filename.match(/(?<=\.)[^.]+$/)?.[0];
+      const filename = item.innerText.replace(/\t?\n?/g, '');
+      const fileSuffix = filename.match(/(?<=\.)[^.]+$/)?.[0];
       if (!fileSuffix) {
+        return res;
       }
-      let language = SUFFIX_LANGUAGES[fileSuffix] || fileSuffix;
+      const language = SUFFIX_LANGUAGES[fileSuffix] || fileSuffix;
       if (!language) {
         return res;
       }
       if (res[language]) {
-        res[language] = res[language] + 1;
+        res[language] += 1;
       } else {
         res[language] = USAGE_THRESHOLD;
       }
@@ -94,27 +97,29 @@ const extractLanguagesFromPage = tgitMetadata => new Promise(resolve => {
   });
 });
 
-const nowDate = () => {
-  return new Date().toISOString().split('T')[0];
-}
+const nowDate = () => new Date().toISOString().split('T')[0];
 
 const fetchLanguages = tgitMetadata => new Promise(resolve => {
-  fetch(`${tgitMetadata.api_url}/metrics/language_distribution?begin_date=&end_date=${nowDate()}`).then(checkResponseStatus).then(parseResponse).then(convertBytesToPercents).then(resolve).catch(() => {
-    extractLanguagesFromPage(tgitMetadata).then(resolve);
-  });
+  fetch(`${tgitMetadata.api_url}/metrics/language_distribution?begin_date=&end_date=${nowDate()}`).
+    then(checkResponseStatus).then(parseResponse).then(convertBytesToPercents).then(resolve).catch(() => {
+      extractLanguagesFromPage(tgitMetadata).then(resolve);
+    });
 });
 
 const selectTools = languages => new Promise(resolve => {
   const overallPoints = Object.values(languages).reduce((overall, current) => overall + current, 0);
 
-  const filterLang = language => SUPPORTED_LANGUAGES[language.toLowerCase()] && languages[language] / overallPoints > USAGE_THRESHOLD;
+  const filterLang = language =>
+    SUPPORTED_LANGUAGES[language.toLowerCase()] && languages[language] / overallPoints > USAGE_THRESHOLD;
 
   const selectedToolIds = Object.keys(languages).filter(filterLang).reduce((acc, key) => {
     acc.push(...SUPPORTED_LANGUAGES[key.toLowerCase()]);
     return acc;
   }, []);
 
-  const normalizedToolIds = selectedToolIds.length > 0 ? Array.from(new Set(selectedToolIds)) : SUPPORTED_LANGUAGES[DEFAULT_LANGUAGE];
+  const normalizedToolIds = selectedToolIds.length > 0
+    ? Array.from(new Set(selectedToolIds))
+    : SUPPORTED_LANGUAGES[DEFAULT_LANGUAGE];
 
   const tools = normalizedToolIds.sort().map(toolId => SUPPORTED_TOOLS[toolId]);
 
@@ -163,7 +168,9 @@ const addCloneButtonEventHandler = (btn, tgitMetadata) => {
 
     const {toolTag} = e.currentTarget.dataset;
     chrome.runtime.sendMessage({type: 'get-protocol'}, ({protocol}) => {
-      const cloneUrl = protocol === CLONE_PROTOCOLS.HTTPS ? getHttpsCloneUrl(tgitMetadata) : getSshCloneUrl(tgitMetadata);
+      const cloneUrl = protocol === CLONE_PROTOCOLS.HTTPS
+        ? getHttpsCloneUrl(tgitMetadata)
+        : getSshCloneUrl(tgitMetadata);
       const action = getToolboxURN(toolTag, cloneUrl);
       callToolbox(action);
     });
@@ -172,7 +179,8 @@ const addCloneButtonEventHandler = (btn, tgitMetadata) => {
 
 const createCloneButton = (tool, tgitMetadata, small = true) => {
   const button = document.createElement('a');
-  button.setAttribute('class', `btn tg-button ${small ? 'btn-sm' : 'tg-button--size-medium'} has_tooltip BtnGroup-item d-flex`);
+  button.setAttribute('class',
+    `btn tg-button ${small ? 'btn-sm' : 'tg-button--size-medium'} has_tooltip BtnGroup-item d-flex`);
   button.setAttribute('data-title', `Clone in ${tool.name}`);
   button.setAttribute('data-container', 'body');
   button.setAttribute('data-placement', 'bottom');
@@ -194,7 +202,9 @@ const createCloneButton = (tool, tgitMetadata, small = true) => {
 
 const renderCloneButtons = (tools, tgitMetadata) => {
   let getRepoController = document.querySelector('.BtnGroup + .d-flex > get-repo-controller');
-  getRepoController = getRepoController ? getRepoController.parentElement : document.querySelector('.js-get-repo-select-menu');
+  getRepoController = getRepoController
+    ? getRepoController.parentElement
+    : document.querySelector('.js-get-repo-select-menu');
 
   if (getRepoController) {
     const toolboxCloneButtonGroup = document.createElement('div');
@@ -212,8 +222,9 @@ const renderCloneButtons = (tools, tgitMetadata) => {
     if (getRepoController) {
       const toolboxCloneButtonGroup = document.createElement('div');
       const isOnPullRequestsTab = document.querySelector('#pull-requests-tab[aria-current="page"]');
-      toolboxCloneButtonGroup.setAttribute('class', `BtnGroup ${isOnPullRequestsTab ? 'ml-1' : 'mr-2'} d-flex ${CLONE_BUTTON_GROUP_JS_CSS_CLASS}`);
-      toolboxCloneButtonGroup.setAttribute('style', `position: relative;top: 10px;`);
+      toolboxCloneButtonGroup.setAttribute('class',
+        `BtnGroup ${isOnPullRequestsTab ? 'ml-1' : 'mr-2'} d-flex ${CLONE_BUTTON_GROUP_JS_CSS_CLASS}`);
+      toolboxCloneButtonGroup.setAttribute('style', 'position: relative;top: 10px;');
       tools.forEach(tool => {
         const btn = createCloneButton(tool, tgitMetadata, false);
         toolboxCloneButtonGroup.appendChild(btn);
