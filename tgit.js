@@ -81,7 +81,7 @@ const extractLanguagesFromPage = tgitMetadata => new Promise(resolve => {
         return res;
       }
       if (res[language]) {
-        res[language] += 1;
+        res[language] += USAGE_THRESHOLD;
       } else {
         res[language] = USAGE_THRESHOLD;
       }
