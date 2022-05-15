@@ -9,7 +9,9 @@ Browser extension for Chrome and Firefox to check out GitHub, GitLab, and Bitbuc
 ## Change
 官方插件不支持国内常用的Git服务比如工蜂、Gitee，因此这里拓展支持下
 
+![](./distribution/screenshot2.png)
 
+![](./distribution/screenshot1.png)
 
 ## 安装
 
