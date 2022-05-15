@@ -9,4 +9,4 @@ Browser extension for Chrome and Firefox to check out GitHub, GitLab, and Bitbuc
 
 ## 说明
 - 当前工蜂社区版版本较低，不支持语言统计接口，因此命中IDE会参考根目录下文件后缀
-- 该repo不计划PR到官方repo中，如需要单独fork提交
+- 该repo不计划PR到官方repo中，这样也可方便加些个人认为重要的功能，未来如需要单独fork repo提交
