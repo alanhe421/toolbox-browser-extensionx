@@ -171,7 +171,7 @@ const addCloneButtonEventHandler = (btn, tgitMetadata) => {
 
 const createCloneButton = (tool, tgitMetadata, small = true) => {
   const button = document.createElement('a');
-  button.setAttribute('class', `tg-button ${small ? 'btn-sm' : 'tg-button--size-medium'} has_tooltip BtnGroup-item d-flex`);
+  button.setAttribute('class', `btn tg-button ${small ? 'btn-sm' : 'tg-button--size-medium'} has_tooltip BtnGroup-item d-flex`);
   button.setAttribute('data-title', `Clone in ${tool.name}`);
   button.setAttribute('data-container', 'body');
   button.setAttribute('data-placement', 'bottom');
