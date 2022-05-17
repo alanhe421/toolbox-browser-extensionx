@@ -1,13 +1,11 @@
-# JetBrains Toolbox App browser extension
+# JetBrains Toolbox App browser extensionx
 
-[![official project](https://jb.gg/badges/official.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
+JB官方插件[下载地址](https://chrome.google.com/webstore/detail/jetbrains-toolbox-extensi/offnedcbhjldheanlbojaefbfbllddna?utm_source=chrome-ntp-icon)
 
-Browser extension for Chrome and Firefox to check out GitHub, GitLab, and Bitbucket projects, and open them in JetBrains' IDEs in one click.
+## 增强点
 
-
-
-## Change
-官方插件不支持国内常用的Git服务比如工蜂、Gitee，因此这里拓展支持下
+1. 支持国内常用的Git服务比如工蜂、Gitee等使用这里改造的版本
+2. 拓展一些常用功能，比如支持markdown语言命中IDE，比如`屏蔽指定IDE命中`等一些功能
 
 ![](./screenshot.gif)
 
