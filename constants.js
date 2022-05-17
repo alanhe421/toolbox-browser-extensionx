@@ -33,7 +33,8 @@ export const SUPPORTED_LANGUAGES = {
   rust: ['clion', 'idea'],
   puppet: ['rubymine', 'idea'],
   'objective-c': ['appcode'],
-  swift: ['appcode']
+  swift: ['appcode'],
+  markdown: ['webstorm', 'idea']
 };
 
 export const SUPPORTED_TOOLS = {
