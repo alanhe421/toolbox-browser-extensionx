@@ -1,5 +1,7 @@
 # JetBrains Toolbox App browser extensionx
 
+这里是官方插件改进版，so x.
+
 JB官方插件[下载地址](https://chrome.google.com/webstore/detail/jetbrains-toolbox-extensi/offnedcbhjldheanlbojaefbfbllddna?utm_source=chrome-ntp-icon)
 
 ## 增强点
