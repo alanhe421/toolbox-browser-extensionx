@@ -12,7 +12,7 @@ import {
 import {
   getToolboxURN,
   getToolboxNavURN,
-  callToolbox
+  callToolbox, filterToolsByActive
 } from './api/toolbox';
 
 /* eslint-disable max-len */
@@ -76,8 +76,7 @@ const selectTools = language => new Promise(resolve => {
   const tools = normalizedToolIds.
     sort().
     map(toolId => SUPPORTED_TOOLS[toolId]);
-
-  resolve(tools);
+  filterToolsByActive(tools).then(resolve);
 });
 
 const fetchTools = bitbucketMetadata => fetchLanguages(bitbucketMetadata).then(selectTools);

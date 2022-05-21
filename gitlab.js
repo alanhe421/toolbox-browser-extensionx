@@ -13,7 +13,7 @@ import {
 import {
   getToolboxURN,
   getToolboxNavURN,
-  callToolbox
+  callToolbox, filterToolsByActive
 } from './api/toolbox';
 
 const CLONE_BUTTON_JS_CSS_CLASS = 'js-toolbox-clone-button';
@@ -111,8 +111,7 @@ const selectTools = languages => new Promise(resolve => {
   const tools = normalizedToolIds.
     sort().
     map(toolId => SUPPORTED_TOOLS[toolId]);
-
-  resolve(tools);
+  filterToolsByActive(tools).then(resolve);
 });
 
 const fetchTools = gitlabMetadata => fetchLanguages(gitlabMetadata).then(selectTools);

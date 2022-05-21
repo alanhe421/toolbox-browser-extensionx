@@ -12,7 +12,7 @@ import {
 import {
   getToolboxURN,
   getToolboxNavURN,
-  callToolbox
+  callToolbox, filterToolsByActive
 } from './api/toolbox';
 
 const OPEN_BUTTON_JS_CSS_CLASS = 'js-toolbox-open-button';
@@ -67,8 +67,7 @@ const selectTools = language => new Promise(resolve => {
   const tools = normalizedToolIds.
     sort().
     map(toolId => SUPPORTED_TOOLS[toolId]);
-
-  resolve(tools);
+  filterToolsByActive(tools).then(resolve);
 });
 
 const fetchTools = bitbucketMetadata => fetchLanguages(bitbucketMetadata).then(selectTools);

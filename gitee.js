@@ -13,7 +13,7 @@ import {
 import {
   getToolboxURN,
   getToolboxNavURN,
-  callToolbox
+  callToolbox, filterToolsByActive
 } from './api/toolbox';
 
 // eslint-disable-next-line import/no-commonjs
@@ -75,8 +75,7 @@ const selectTools = languages => new Promise(resolve => {
   const tools = normalizedToolIds.
     sort().
     map(toolId => SUPPORTED_TOOLS[toolId]);
-
-  resolve(tools);
+  filterToolsByActive(tools).then(resolve);
 });
 
 const fetchTools = githubMetadata => fetchLanguages(githubMetadata).then(selectTools);
