@@ -9,6 +9,7 @@ const initActiveToolIdsChecked = tools => {
   const body = document.querySelector('#active-ide-tool-list');
   const template = document.querySelector('template');
   let listStr = '';
+  tools.sort((a, b) => a.id.localeCompare(b.id));
   tools.forEach(item => {
     listStr += template.innerHTML.replaceAll('__icon__', item.icon).
       replaceAll('__tool_name__', item.name).replaceAll('__tool_tag__', item.tag).
