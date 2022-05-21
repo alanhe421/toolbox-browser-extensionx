@@ -5,7 +5,6 @@ import {
   SUPPORTED_LANGUAGES,
   SUPPORTED_TOOLS,
   USAGE_THRESHOLD,
-  DEFAULT_LANGUAGE,
   DEFAULT_LANGUAGE_SET,
   CLONE_PROTOCOLS
 } from './constants';
@@ -13,7 +12,7 @@ import {
 import {
   getToolboxURN,
   getToolboxNavURN,
-  callToolbox, filterToolsByActive
+  callToolbox, filterToolsByActive, getDefaultTools
 } from './api/toolbox';
 
 // eslint-disable-next-line import/no-commonjs
@@ -67,15 +66,15 @@ const selectTools = languages => new Promise(resolve => {
       acc.push(...SUPPORTED_LANGUAGES[key.toLowerCase()]);
       return acc;
     }, []);
-
-  const normalizedToolIds = selectedToolIds.length > 0
-    ? Array.from(new Set(selectedToolIds))
-    : SUPPORTED_LANGUAGES[DEFAULT_LANGUAGE];
+  if (selectedToolIds.length === 0) {
+    return getDefaultTools().then(resolve);
+  }
+  const normalizedToolIds = Array.from(new Set(selectedToolIds));
 
   const tools = normalizedToolIds.
     sort().
     map(toolId => SUPPORTED_TOOLS[toolId]);
-  filterToolsByActive(tools).then(resolve);
+  return filterToolsByActive(tools).then(resolve);
 });
 
 const fetchTools = githubMetadata => fetchLanguages(githubMetadata).then(selectTools);

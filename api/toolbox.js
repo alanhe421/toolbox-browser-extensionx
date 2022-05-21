@@ -1,4 +1,6 @@
-import {getActiveToolIds} from './storage';
+import {SUPPORTED_TOOLS} from '../constants';
+
+import {getActiveToolIds, getDefaultToolIds} from './storage';
 
 const convertNumberToIndex = number => number - 1;
 
@@ -24,4 +26,8 @@ export function callToolbox(action) {
 
 export const filterToolsByActive = originalTools => new Promise(resolve => getActiveToolIds().then(toolIds => {
   resolve(originalTools.filter(tool => toolIds.includes(tool.tag)));
+}));
+
+export const getDefaultTools = () => new Promise(resolve => getDefaultToolIds().then(defaultToolIds => {
+  resolve([Object.values(SUPPORTED_TOOLS).find(item => defaultToolIds.includes(item.tag))]);
 }));

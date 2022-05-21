@@ -10,7 +10,6 @@ import {
   MAX_DECIMALS,
   MIN_VALID_HTTP_STATUS,
   MAX_VALID_HTTP_STATUS,
-  DEFAULT_LANGUAGE,
   DEFAULT_LANGUAGE_SET,
   CLONE_PROTOCOLS
 } from './constants';
@@ -18,7 +17,9 @@ import {
 import {
   getToolboxURN,
   getToolboxNavURN,
-  callToolbox, filterToolsByActive
+  callToolbox,
+  filterToolsByActive,
+  getDefaultTools
 } from './api/toolbox';
 
 const CLONE_BUTTON_GROUP_JS_CSS_CLASS = 'js-toolbox-clone-button-group';
@@ -140,14 +141,12 @@ const selectTools = languages => new Promise(resolve => {
       return acc;
     }, []);
 
-  const normalizedToolIds = selectedToolIds.length > 0
-    ? Array.from(new Set(selectedToolIds))
-    : SUPPORTED_LANGUAGES[DEFAULT_LANGUAGE];
-
-  const tools = normalizedToolIds.
-    sort().
-    map(toolId => SUPPORTED_TOOLS[toolId]);
-  filterToolsByActive(tools).then(resolve);
+  if (selectedToolIds.length === 0) {
+    return getDefaultTools().then(resolve);
+  }
+  const normalizedToolIds = Array.from(new Set(selectedToolIds));
+  const tools = normalizedToolIds.sort().map(toolId => SUPPORTED_TOOLS[toolId]);
+  return filterToolsByActive(tools).then(resolve);
 });
 
 const fetchTools = githubMetadata => fetchLanguages(githubMetadata).then(selectTools);

@@ -2,18 +2,9 @@ import 'whatwg-fetch';
 import {observe} from 'selector-observer';
 import bb from 'bitbucket-url-to-object';
 
-import {
-  SUPPORTED_LANGUAGES,
-  SUPPORTED_TOOLS,
-  DEFAULT_LANGUAGE,
-  CLONE_PROTOCOLS
-} from './constants';
+import {CLONE_PROTOCOLS, SUPPORTED_LANGUAGES, SUPPORTED_TOOLS} from './constants';
 
-import {
-  getToolboxURN,
-  getToolboxNavURN,
-  callToolbox, filterToolsByActive
-} from './api/toolbox';
+import {callToolbox, filterToolsByActive, getDefaultTools, getToolboxNavURN, getToolboxURN} from './api/toolbox';
 
 /* eslint-disable max-len */
 const CLONE_BUTTON_PAGE_HEADER_WRAPPER_SELECTOR = '[data-qa="page-header-wrapper"] > div > div > div > div > div > div > button:last-child';
@@ -69,14 +60,15 @@ const selectTools = language => new Promise(resolve => {
   const normalizedLanguage = language === 'html/css' ? 'html' : language;
 
   const toolIds = normalizedLanguage && SUPPORTED_LANGUAGES[normalizedLanguage.toLowerCase()];
-  const normalizedToolIds = toolIds && toolIds.length > 0
-    ? toolIds
-    : SUPPORTED_LANGUAGES[DEFAULT_LANGUAGE];
 
-  const tools = normalizedToolIds.
+  if (toolIds.length === 0) {
+    return getDefaultTools().then(resolve);
+  }
+
+  const tools = toolIds.
     sort().
     map(toolId => SUPPORTED_TOOLS[toolId]);
-  filterToolsByActive(tools).then(resolve);
+  return filterToolsByActive(tools).then(resolve);
 });
 
 const fetchTools = bitbucketMetadata => fetchLanguages(bitbucketMetadata).then(selectTools);

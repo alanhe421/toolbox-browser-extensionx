@@ -1,5 +1,12 @@
 @import "page.css";
 
+.mt-1n {
+  margin-top: 10px;
+}
+
+.mt-2n {
+  margin-top: 20px;
+}
 .options {
   width: 36rem;
   margin: 0 auto;
@@ -30,4 +37,17 @@
 
 h1 + .option {
   margin-top: 3rem;
+}
+
+#active-ide-tool-list, #default-tool-list {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.tool-option{
+  width: 25%;
+}
+
+#default-tool {
+  margin-top: 25px;
 }

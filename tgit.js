@@ -10,14 +10,13 @@ import {
   MAX_DECIMALS,
   MIN_VALID_HTTP_STATUS,
   MAX_VALID_HTTP_STATUS,
-  DEFAULT_LANGUAGE,
   DEFAULT_LANGUAGE_SET,
   CLONE_PROTOCOLS,
   SUFFIX_LANGUAGES
 } from './constants';
 
 import {
-  getToolboxURN, getToolboxNavURN, callToolbox, filterToolsByActive
+  getToolboxURN, getToolboxNavURN, callToolbox, filterToolsByActive, getDefaultTools
 } from './api/toolbox';
 
 // eslint-disable-next-line import/no-commonjs
@@ -117,12 +116,12 @@ const selectTools = languages => new Promise(resolve => {
     return acc;
   }, []);
 
-  const normalizedToolIds = selectedToolIds.length > 0
-    ? Array.from(new Set(selectedToolIds))
-    : SUPPORTED_LANGUAGES[DEFAULT_LANGUAGE];
-
+  if (selectedToolIds.length === 0) {
+    return getDefaultTools().then(resolve);
+  }
+  const normalizedToolIds = Array.from(new Set(selectedToolIds));
   const tools = normalizedToolIds.sort().map(toolId => SUPPORTED_TOOLS[toolId]);
-  filterToolsByActive(tools).then(resolve);
+  return filterToolsByActive(tools).then(resolve);
 });
 
 const fetchTools = tgitMetadata => fetchLanguages(tgitMetadata).then(selectTools);

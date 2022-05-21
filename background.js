@@ -2,7 +2,7 @@ import {
   getProtocol,
   saveProtocol,
   getModifyPages,
-  saveModifyPages, getActiveToolIds, saveActiveToolIds
+  saveModifyPages, getActiveToolIds, saveActiveToolIds, getDefaultToolIds, saveDefaultToolIds
 } from './api/storage';
 import {createExtensionMenu} from './api/menu';
 import {SUPPORTED_TOOLS} from './constants';
@@ -26,13 +26,29 @@ const handleMessage = (message, sender, sendResponse) => {
           newValue: Object.entries(SUPPORTED_TOOLS).map(([toolId, item]) => ({
             ...item,
             id: toolId,
-            checked: activeIds.includes(toolId)
+            checked: activeIds.includes(item.tag)
+          }))
+        });
+      });
+      break;
+
+    case 'get-default-tools':
+      getDefaultToolIds().then(activeIds => {
+        chrome.runtime.sendMessage({
+          type: 'init-default-tool-ids',
+          newValue: Object.entries(SUPPORTED_TOOLS).map(([toolId, item]) => ({
+            ...item,
+            id: toolId,
+            checked: activeIds.includes(item.tag)
           }))
         });
       });
       break;
     case 'update-active-tool-ids':
       saveActiveToolIds(message.data.toolIds).then(() => sendResponse({}));
+      break;
+    case 'update-default-tool-ids':
+      saveDefaultToolIds(message.data.toolIds).then(() => sendResponse({}));
       break;
     case 'enable-page-action':
       chrome.browserAction.setIcon({

@@ -5,7 +5,6 @@ import {
   SUPPORTED_LANGUAGES,
   SUPPORTED_TOOLS,
   USAGE_THRESHOLD,
-  DEFAULT_LANGUAGE,
   DEFAULT_LANGUAGE_SET,
   CLONE_PROTOCOLS
 } from './constants';
@@ -13,7 +12,7 @@ import {
 import {
   getToolboxURN,
   getToolboxNavURN,
-  callToolbox, filterToolsByActive
+  callToolbox, filterToolsByActive, getDefaultTools
 } from './api/toolbox';
 
 const CLONE_BUTTON_JS_CSS_CLASS = 'js-toolbox-clone-button';
@@ -103,15 +102,13 @@ const selectTools = languages => new Promise(resolve => {
       acc.push(...SUPPORTED_LANGUAGES[key.toLowerCase()]);
       return acc;
     }, []);
-
-  const normalizedToolIds = selectedToolIds.length > 0
-    ? Array.from(new Set(selectedToolIds))
-    : SUPPORTED_LANGUAGES[DEFAULT_LANGUAGE];
-
-  const tools = normalizedToolIds.
+  if (selectedToolIds.length === 0) {
+    return getDefaultTools().then(resolve);
+  }
+  const tools = selectedToolIds.
     sort().
     map(toolId => SUPPORTED_TOOLS[toolId]);
-  filterToolsByActive(tools).then(resolve);
+  return filterToolsByActive(tools).then(resolve);
 });
 
 const fetchTools = gitlabMetadata => fetchLanguages(gitlabMetadata).then(selectTools);
