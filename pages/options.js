@@ -7,8 +7,9 @@ const selectProtocolInput = protocol => {
 
 const initActiveToolIdsChecked = tools => {
   const body = document.querySelector('#active-ide-tool-list');
-  const template = document.querySelector('template');
+  const template = document.querySelector('.active-tools-template');
   let listStr = '';
+  tools.sort((a, b) => a.id.localeCompare(b.id));
   tools.forEach(item => {
     listStr += template.innerHTML.replaceAll('__icon__', item.icon).
       replaceAll('__tool_name__', item.name).replaceAll('__tool_tag__', item.tag).
@@ -21,6 +22,28 @@ const initActiveToolIdsChecked = tools => {
       chrome.runtime.sendMessage({
         type: 'update-active-tool-ids', data: {
           toolIds: checkedIds
+        }
+      });
+    }
+  });
+};
+
+const initDefaultToolIdsChecked = tools => {
+  const body = document.querySelector('#default-tool-list');
+  const template = document.querySelector('.default-tools-template');
+  let listStr = '';
+  tools.sort((a, b) => a.id.localeCompare(b.id));
+  tools.forEach(item => {
+    listStr += template.innerHTML.replaceAll('__icon__', item.icon).
+      replaceAll('__tool_name__', item.name).replaceAll('__tool_tag__', item.tag).
+      replaceAll('checked="__tool_checked__"', item.checked ? 'checked' : '');
+  });
+  body.innerHTML += listStr;
+  body.addEventListener('change', event => {
+    if (event.target.tagName === 'INPUT') {
+      chrome.runtime.sendMessage({
+        type: 'update-default-tool-ids', data: {
+          toolIds: [event.target.value]
         }
       });
     }
@@ -52,10 +75,14 @@ chrome.runtime.onMessage.addListener(message => {
     case 'init-active-tool-ids':
       initActiveToolIdsChecked(message.newValue);
       break;
+    case 'init-default-tool-ids':
+      initDefaultToolIdsChecked(message.newValue);
+      break;
       // no default
   }
 });
 
 (() => {
   chrome.runtime.sendMessage({type: 'get-active-tools'});
+  chrome.runtime.sendMessage({type: 'get-default-tools'});
 })();

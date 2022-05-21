@@ -3,23 +3,18 @@ import {observe} from 'selector-observer';
 import gh from 'github-url-to-object';
 
 import {
-  SUPPORTED_LANGUAGES,
-  SUPPORTED_TOOLS,
-  USAGE_THRESHOLD,
+  CLONE_PROTOCOLS,
+  DEFAULT_LANGUAGE_SET,
   HUNDRED_PERCENT,
   MAX_DECIMALS,
-  MIN_VALID_HTTP_STATUS,
   MAX_VALID_HTTP_STATUS,
-  DEFAULT_LANGUAGE,
-  DEFAULT_LANGUAGE_SET,
-  CLONE_PROTOCOLS
+  MIN_VALID_HTTP_STATUS,
+  SUPPORTED_LANGUAGES,
+  SUPPORTED_TOOLS,
+  USAGE_THRESHOLD
 } from './constants';
 
-import {
-  getToolboxURN,
-  getToolboxNavURN,
-  callToolbox, filterToolsByActive
-} from './api/toolbox';
+import {callToolbox, filterToolsByActive, getToolboxNavURN, getToolboxURN} from './api/toolbox';
 
 const CLONE_BUTTON_GROUP_JS_CSS_CLASS = 'js-toolbox-clone-button-group';
 const OPEN_BUTTON_JS_CSS_CLASS = 'js-toolbox-open-button';
@@ -140,14 +135,9 @@ const selectTools = languages => new Promise(resolve => {
       return acc;
     }, []);
 
-  const normalizedToolIds = selectedToolIds.length > 0
-    ? Array.from(new Set(selectedToolIds))
-    : SUPPORTED_LANGUAGES[DEFAULT_LANGUAGE];
-
-  const tools = normalizedToolIds.
-    sort().
-    map(toolId => SUPPORTED_TOOLS[toolId]);
-  filterToolsByActive(tools).then(resolve);
+  const normalizedToolIds = Array.from(new Set(selectedToolIds));
+  const tools = normalizedToolIds.sort().map(toolId => SUPPORTED_TOOLS[toolId]);
+  return filterToolsByActive(tools).then(resolve);
 });
 
 const fetchTools = githubMetadata => fetchLanguages(githubMetadata).then(selectTools);

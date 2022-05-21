@@ -2,19 +2,14 @@
 import 'whatwg-fetch';
 
 import {
+  CLONE_PROTOCOLS,
+  DEFAULT_LANGUAGE_SET,
   SUPPORTED_LANGUAGES,
   SUPPORTED_TOOLS,
-  USAGE_THRESHOLD,
-  DEFAULT_LANGUAGE,
-  DEFAULT_LANGUAGE_SET,
-  CLONE_PROTOCOLS
+  USAGE_THRESHOLD
 } from './constants';
 
-import {
-  getToolboxURN,
-  getToolboxNavURN,
-  callToolbox, filterToolsByActive
-} from './api/toolbox';
+import {callToolbox, filterToolsByActive, getToolboxNavURN, getToolboxURN} from './api/toolbox';
 
 const CLONE_BUTTON_JS_CSS_CLASS = 'js-toolbox-clone-button';
 const OPEN_BUTTON_GROUP_JS_CSS_CLASS = 'js-toolbox-open-button-group';
@@ -104,14 +99,10 @@ const selectTools = languages => new Promise(resolve => {
       return acc;
     }, []);
 
-  const normalizedToolIds = selectedToolIds.length > 0
-    ? Array.from(new Set(selectedToolIds))
-    : SUPPORTED_LANGUAGES[DEFAULT_LANGUAGE];
-
-  const tools = normalizedToolIds.
+  const tools = selectedToolIds.
     sort().
     map(toolId => SUPPORTED_TOOLS[toolId]);
-  filterToolsByActive(tools).then(resolve);
+  return filterToolsByActive(tools).then(resolve);
 });
 
 const fetchTools = gitlabMetadata => fetchLanguages(gitlabMetadata).then(selectTools);

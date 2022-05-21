@@ -39,18 +39,33 @@
             <img src="options-extra-buttons.png" alt="Extra buttons added to page">
         </div>
     </div>
-    <div>
+    <div class="mt-2n">
         Active IDE Tool
     </div>
     <div id="active-ide-tool-list">
 
     </div>
+    <div class="mt-2n">
+        Default IDE Tool
+    </div>
+    <div id="default-tool-list" class="mt-1n">
+
+    </div>
 </div>
-<template>
+<template class="active-tools-template">
     <div class="tool-option">
         <label for="__tool_tag__">
             <img src="__icon__" title="__tool_name__"/>
             <input name="__tool_tag__" class="js-modify-pages-input" type="checkbox" checked="__tool_checked__">
+        </label>
+    </div>
+</template>
+<template class="default-tools-template">
+    <div class="tool-option">
+        <label for="__tool_tag__">
+            <img src="__icon__" title="__tool_name__"/>
+            <input value="__tool_tag__" class="js-modify-pages-input" type="radio" name="default-tool"
+                   checked="__tool_checked__">
         </label>
     </div>
 </template>
