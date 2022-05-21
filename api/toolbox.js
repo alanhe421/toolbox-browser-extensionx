@@ -34,8 +34,11 @@ export const filterToolsByActive = originalTools => new Promise(resolve => {
   Promise.all([getActiveToolIds(), getDefaultTools()]).then(([activeToolIds, defaultTools]) => {
     const toolIds = [];
     const tools = originalTools.filter(tool => {
-      toolIds.push(tool.tag);
-      return activeToolIds.includes(tool.tag);
+      if (activeToolIds.includes(tool.tag)) {
+        toolIds.push(tool.tag);
+        return true;
+      }
+      return false;
     });
     resolve(tools.concat(defaultTools.filter(tool => !toolIds.includes(tool.tag))));
   });
