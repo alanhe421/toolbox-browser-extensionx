@@ -6,8 +6,10 @@ JB官方插件[下载地址](https://chrome.google.com/webstore/detail/jetbrains
 
 ## 增强点
 
-1. 支持国内常用的Git服务比如工蜂、Gitee等使用这里改造的版本
-2. 拓展一些常用功能，比如支持markdown语言命中IDE，比如`屏蔽指定IDE命中`等一些功能
+1. 支持国内常用的Git服务工蜂、Gitee
+2. 支持markdown语言命中IDE
+3. 支持设置activeIDE，没有选中的IDE，不会作为IDE一键启动按钮
+4. 支持设置缺省IDE，即任何仓库都会显示该IDE，作为兜底按钮
 
 ![](./screenshot.gif)
 

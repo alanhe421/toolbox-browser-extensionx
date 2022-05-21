@@ -24,10 +24,19 @@ export function callToolbox(action) {
   document.body.removeChild(fakeAction);
 }
 
-export const filterToolsByActive = originalTools => new Promise(resolve => getActiveToolIds().then(toolIds => {
-  resolve(originalTools.filter(tool => toolIds.includes(tool.tag)));
-}));
 
 export const getDefaultTools = () => new Promise(resolve => getDefaultToolIds().then(defaultToolIds => {
   resolve([Object.values(SUPPORTED_TOOLS).find(item => defaultToolIds.includes(item.tag))]);
 }));
+
+
+export const filterToolsByActive = originalTools => new Promise(resolve => {
+  Promise.all([getActiveToolIds(), getDefaultTools()]).then(([activeToolIds, defaultTools]) => {
+    const toolIds = [];
+    const tools = originalTools.filter(tool => {
+      toolIds.push(tool.tag);
+      return activeToolIds.includes(tool.tag);
+    });
+    resolve(tools.concat(defaultTools.filter(tool => !toolIds.includes(tool.tag))));
+  });
+});

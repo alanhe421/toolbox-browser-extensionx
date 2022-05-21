@@ -3,21 +3,19 @@ import 'whatwg-fetch';
 import {observe} from 'selector-observer';
 
 import {
-  SUPPORTED_LANGUAGES,
-  SUPPORTED_TOOLS,
-  USAGE_THRESHOLD,
+  CLONE_PROTOCOLS,
+  DEFAULT_LANGUAGE_SET,
   HUNDRED_PERCENT,
   MAX_DECIMALS,
-  MIN_VALID_HTTP_STATUS,
   MAX_VALID_HTTP_STATUS,
-  DEFAULT_LANGUAGE_SET,
-  CLONE_PROTOCOLS,
-  SUFFIX_LANGUAGES
+  MIN_VALID_HTTP_STATUS,
+  SUFFIX_LANGUAGES,
+  SUPPORTED_LANGUAGES,
+  SUPPORTED_TOOLS,
+  USAGE_THRESHOLD
 } from './constants';
 
-import {
-  getToolboxURN, getToolboxNavURN, callToolbox, filterToolsByActive, getDefaultTools
-} from './api/toolbox';
+import {callToolbox, filterToolsByActive, getToolboxNavURN, getToolboxURN} from './api/toolbox';
 
 // eslint-disable-next-line import/no-commonjs
 const gh = require('tgit-url-to-object');
@@ -116,9 +114,7 @@ const selectTools = languages => new Promise(resolve => {
     return acc;
   }, []);
 
-  if (selectedToolIds.length === 0) {
-    return getDefaultTools().then(resolve);
-  }
+
   const normalizedToolIds = Array.from(new Set(selectedToolIds));
   const tools = normalizedToolIds.sort().map(toolId => SUPPORTED_TOOLS[toolId]);
   return filterToolsByActive(tools).then(resolve);

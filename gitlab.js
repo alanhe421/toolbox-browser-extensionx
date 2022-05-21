@@ -2,18 +2,14 @@
 import 'whatwg-fetch';
 
 import {
+  CLONE_PROTOCOLS,
+  DEFAULT_LANGUAGE_SET,
   SUPPORTED_LANGUAGES,
   SUPPORTED_TOOLS,
-  USAGE_THRESHOLD,
-  DEFAULT_LANGUAGE_SET,
-  CLONE_PROTOCOLS
+  USAGE_THRESHOLD
 } from './constants';
 
-import {
-  getToolboxURN,
-  getToolboxNavURN,
-  callToolbox, filterToolsByActive, getDefaultTools
-} from './api/toolbox';
+import {callToolbox, filterToolsByActive, getToolboxNavURN, getToolboxURN} from './api/toolbox';
 
 const CLONE_BUTTON_JS_CSS_CLASS = 'js-toolbox-clone-button';
 const OPEN_BUTTON_GROUP_JS_CSS_CLASS = 'js-toolbox-open-button-group';
@@ -102,9 +98,7 @@ const selectTools = languages => new Promise(resolve => {
       acc.push(...SUPPORTED_LANGUAGES[key.toLowerCase()]);
       return acc;
     }, []);
-  if (selectedToolIds.length === 0) {
-    return getDefaultTools().then(resolve);
-  }
+
   const tools = selectedToolIds.
     sort().
     map(toolId => SUPPORTED_TOOLS[toolId]);

@@ -2,18 +2,14 @@ import 'whatwg-fetch';
 import {observe} from 'selector-observer';
 
 import {
+  CLONE_PROTOCOLS,
+  DEFAULT_LANGUAGE_SET,
   SUPPORTED_LANGUAGES,
   SUPPORTED_TOOLS,
-  USAGE_THRESHOLD,
-  DEFAULT_LANGUAGE_SET,
-  CLONE_PROTOCOLS
+  USAGE_THRESHOLD
 } from './constants';
 
-import {
-  getToolboxURN,
-  getToolboxNavURN,
-  callToolbox, filterToolsByActive, getDefaultTools
-} from './api/toolbox';
+import {callToolbox, filterToolsByActive, getToolboxNavURN, getToolboxURN} from './api/toolbox';
 
 // eslint-disable-next-line import/no-commonjs
 const gh = require('gitee-url-to-object');
@@ -66,9 +62,7 @@ const selectTools = languages => new Promise(resolve => {
       acc.push(...SUPPORTED_LANGUAGES[key.toLowerCase()]);
       return acc;
     }, []);
-  if (selectedToolIds.length === 0) {
-    return getDefaultTools().then(resolve);
-  }
+
   const normalizedToolIds = Array.from(new Set(selectedToolIds));
 
   const tools = normalizedToolIds.
