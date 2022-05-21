@@ -1,3 +1,5 @@
+import {getActiveToolIds} from './storage';
+
 const convertNumberToIndex = number => number - 1;
 
 export function getToolboxURN(toolTag, cloneUrl) {
@@ -19,3 +21,7 @@ export function callToolbox(action) {
   fakeAction.click();
   document.body.removeChild(fakeAction);
 }
+
+export const filterToolsByActive = originalTools => new Promise(resolve => getActiveToolIds().then(toolIds => {
+  resolve(originalTools.filter(tool => toolIds.includes(tool.tag)));
+}));

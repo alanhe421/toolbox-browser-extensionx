@@ -1,8 +1,9 @@
-import {CLONE_PROTOCOLS} from '../constants';
+import {CLONE_PROTOCOLS, SUPPORTED_TOOLS} from '../constants';
 
 const STORAGE_ITEMS = {
   PROTOCOL: 'protocol',
-  MODIFY_PAGES: 'modify-pages'
+  MODIFY_PAGES: 'modify-pages',
+  TOOL_IDS: 'tool-ids'
 };
 
 const DEFAULTS = {
@@ -71,5 +72,24 @@ export function saveModifyPages(allow) {
       catch(() => {
         resolve();
       });
+  });
+}
+
+
+export function saveActiveToolIds(toolIds) {
+  return new Promise(resolve => {
+    saveToStorage(STORAGE_ITEMS.TOOL_IDS, toolIds).then(resolve).catch(() => {
+      resolve();
+    });
+  });
+}
+
+export function getActiveToolIds() {
+  return new Promise(resolve => {
+    getFromStorage(STORAGE_ITEMS.TOOL_IDS).then(ids => {
+      resolve((ids == null || ids.length === 0) ? Object.keys(SUPPORTED_TOOLS) : ids);
+    }).catch(() => {
+      resolve(Object.keys(SUPPORTED_TOOLS));
+    });
   });
 }
