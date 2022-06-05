@@ -10,6 +10,7 @@ JB官方插件[下载地址](https://chrome.google.com/webstore/detail/jetbrains
 2. 支持markdown语言命中IDE
 3. 支持设置activeIDE，没有选中的IDE，不会作为IDE一键启动按钮
 4. 支持设置缺省IDE，即任何仓库都会显示该IDE，作为兜底按钮
+5. 支持非JB系IDE，比如Visual Studio Code
 
 ![](./screenshot.gif)
 

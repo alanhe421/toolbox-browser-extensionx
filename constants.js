@@ -8,6 +8,8 @@ import webstormIcon from '@jetbrains/logos/webstorm/webstorm.svg';
 import riderIcon from '@jetbrains/logos/rider/rider.svg';
 import golandIcon from '@jetbrains/logos/goland/goland.svg';
 
+import codeIcon from './icons/vscode.svg';
+
 export const DEFAULT_LANGUAGE = 'java';
 
 export const SUPPORTED_LANGUAGES = {
@@ -15,13 +17,13 @@ export const SUPPORTED_LANGUAGES = {
   kotlin: ['idea'],
   groovy: ['idea'],
   scala: ['idea'],
-  javascript: ['webstorm', 'phpstorm', 'idea'],
+  javascript: ['webstorm', 'phpstorm', 'idea', 'code'],
   coffeescript: ['webstorm', 'phpstorm', 'idea'],
-  typescript: ['webstorm', 'phpstorm', 'idea'],
+  typescript: ['webstorm', 'phpstorm', 'idea', 'code'],
   dart: ['webstorm', 'phpstorm', 'idea'],
   go: ['goland', 'idea'],
-  css: ['webstorm', 'phpstorm', 'idea'],
-  html: ['webstorm', 'phpstorm', 'idea'],
+  css: ['webstorm', 'phpstorm', 'idea', 'code'],
+  html: ['webstorm', 'phpstorm', 'idea', 'code'],
   python: ['pycharm', 'idea'],
   'jupyter notebook': ['pycharm', 'idea'],
   php: ['phpstorm', 'idea'],
@@ -34,7 +36,7 @@ export const SUPPORTED_LANGUAGES = {
   puppet: ['rubymine', 'idea'],
   'objective-c': ['appcode'],
   swift: ['appcode'],
-  markdown: ['webstorm', 'idea']
+  markdown: ['webstorm', 'idea', 'code']
 };
 
 export const SUPPORTED_TOOLS = {
@@ -82,6 +84,11 @@ export const SUPPORTED_TOOLS = {
     name: 'GoLand',
     tag: 'goland',
     icon: chrome.runtime.getURL(golandIcon)
+  },
+  code: {
+    name: 'Visual Studio Code',
+    tag: 'code',
+    icon: chrome.runtime.getURL(codeIcon)
   }
 };
 

@@ -7,6 +7,7 @@
 .mt-2n {
   margin-top: 20px;
 }
+
 .options {
   width: 36rem;
   margin: 0 auto;
@@ -44,8 +45,12 @@ h1 + .option {
   flex-flow: row wrap;
 }
 
-.tool-option{
+.tool-option {
   width: 25%;
+}
+
+.tool-option img {
+  width: 70px;
 }
 
 #default-tool {
