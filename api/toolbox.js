@@ -5,6 +5,9 @@ import {getActiveToolIds, getDefaultToolIds} from './storage';
 const convertNumberToIndex = number => number - 1;
 
 export function getToolboxURN(toolTag, cloneUrl) {
+  if (toolTag === SUPPORTED_TOOLS.code.tag) {
+    return `vscode://vscode.git/clone?url=${cloneUrl}`;
+  }
   return `jetbrains://${toolTag}/checkout/git?checkout.repo=${cloneUrl}&idea.required.plugins.id=Git4Idea`;
 }
 
@@ -26,7 +29,7 @@ export function callToolbox(action) {
 
 
 export const getDefaultTools = () => new Promise(resolve => getDefaultToolIds().then(defaultToolIds => {
-  resolve([Object.values(SUPPORTED_TOOLS).find(item => defaultToolIds.includes(item.tag))]);
+  resolve(Object.values(SUPPORTED_TOOLS).filter(item => defaultToolIds.includes(item.tag)));
 }));
 
 

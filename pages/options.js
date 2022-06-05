@@ -40,10 +40,11 @@ const initDefaultToolIdsChecked = tools => {
   });
   body.innerHTML += listStr;
   body.addEventListener('change', event => {
+    const checkedIds = Array.from(body.querySelectorAll('input:checked')).map(item => item.name);
     if (event.target.tagName === 'INPUT') {
       chrome.runtime.sendMessage({
         type: 'update-default-tool-ids', data: {
-          toolIds: [event.target.value]
+          toolIds: checkedIds
         }
       });
     }
