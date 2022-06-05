@@ -266,9 +266,8 @@ const removePageButtons = () => {
 
 const createOpenButton = (tool, tgitMetadata) => {
   const action = document.createElement('a');
-  action.setAttribute('class', `btn-octicon tooltipped tooltipped-nw ${OPEN_BUTTON_JS_CSS_CLASS}`);
-  action.setAttribute('aria-label', `Open this file in ${tool.name}`);
-  action.setAttribute('href', '#');
+  action.setAttribute('class', `tg-button tg-button--size-medium has_tooltip  ${OPEN_BUTTON_JS_CSS_CLASS}`);
+  action.setAttribute('data-title', `Open this file in ${tool.name}`);
 
   const actionIcon = document.createElement('img');
   actionIcon.setAttribute('alt', tool.name);
@@ -308,7 +307,7 @@ const createOpenMenuItem = (tool, first, tgitMetadata) => {
 };
 
 const renderOpenButtons = (tools, tgitMetadata) => {
-  const actionAnchorElement = document.querySelector('.repository-content .Box-header .BtnGroup + div');
+  const actionAnchorElement = document.querySelector('div[class*="tree-encoding"]');
   const actionAnchorFragment = document.createDocumentFragment();
   const blobToolbarDropdown = document.querySelector('.BlobToolbar-dropdown');
 
@@ -336,7 +335,8 @@ const renderPageButtons = tgitMetadata => {
   });
 };
 
-const startTrackingDOMChanges = tgitMetadata => observe('div[class="project-topics append-bottom-25"]', {
+const startTrackingDOMChanges = tgitMetadata => observe('div[class="project-topics append-bottom-25"],' +
+    'div[class*="tree-encoding"]', {
   add() {
     removePageButtons();
     renderPageButtons(tgitMetadata);

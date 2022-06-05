@@ -1,20 +1,15 @@
 import {
-  getProtocol,
-  saveProtocol,
+  getActiveToolIds,
+  getDefaultToolIds,
   getModifyPages,
-  saveModifyPages, getActiveToolIds, saveActiveToolIds, getDefaultToolIds, saveDefaultToolIds
+  getProtocol,
+  saveActiveToolIds,
+  saveDefaultToolIds,
+  saveModifyPages,
+  saveProtocol
 } from './api/storage';
 import {createExtensionMenu} from './api/menu';
 import {SUPPORTED_TOOLS} from './constants';
-
-const handleInstalled = () => {
-  const manifest = chrome.runtime.getManifest();
-  const uninstallUrl = `https://www.jetbrains.com/toolbox-app/uninstall/extension/?version=${manifest.version}`;
-  chrome.runtime.setUninstallURL(uninstallUrl, () => {
-    // eslint-disable-next-line no-void
-    void chrome.runtime.lastError;
-  });
-};
 
 // eslint-disable-next-line complexity
 const handleMessage = (message, sender, sendResponse) => {
@@ -122,7 +117,6 @@ const handleMessage = (message, sender, sendResponse) => {
   return undefined;
 };
 
-chrome.runtime.onInstalled.addListener(handleInstalled);
 chrome.runtime.onMessage.addListener(handleMessage);
 
 createExtensionMenu();
