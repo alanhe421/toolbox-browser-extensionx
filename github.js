@@ -331,7 +331,7 @@ const createOpenMenuItem = (tool, first, githubMetadata) => {
 };
 
 const renderOpenButtons = (tools, githubMetadata) => {
-  const actionAnchorElement = document.querySelector('.repository-content .Box-header .BtnGroup + div');
+  const actionAnchorElement = document.querySelector('.repository-content .Box-header .BtnGroup + div:not(.BtnGroup)');
   const actionAnchorFragment = document.createDocumentFragment();
   const blobToolbarDropdown = document.querySelector('.BlobToolbar-dropdown');
 
